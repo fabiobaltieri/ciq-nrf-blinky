@@ -4,9 +4,12 @@ using Toybox.WatchUi;
 using Toybox.System;
 
 class DataField extends WatchUi.SimpleDataField {
-	function initialize() {
+	hidden var bleDevice;
+
+	function initialize(device) {
 		SimpleDataField.initialize();
 		label = "nRF Blinky";
+		bleDevice = device;
 	}
 
 	function compute(info) {
