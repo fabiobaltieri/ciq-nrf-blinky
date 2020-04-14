@@ -8,7 +8,8 @@ hidden const LBS_SERVICE = "00001523-1212-efde-1523-785feabcd123";
 hidden const LBS_LED_CHAR = "00001525-1212-efde-1523-785feabcd123";
 
 class BleDevice extends Ble.BleDelegate {
-	hidden var device;
+	var scanning = false;
+	var device = null;
 
 	hidden function debug(str) {
 		System.println("[ble] " + str);
@@ -45,6 +46,7 @@ class BleDevice extends Ble.BleDelegate {
 
 	private function connect(result) {
 		debug("connect");
+		scanning = false;
 		Ble.setScanState(Ble.SCAN_STATE_OFF);
 		Ble.pairDevice(result);
 	}
@@ -76,8 +78,19 @@ class BleDevice extends Ble.BleDelegate {
 		}
 	}
 
-	function start() {
+	function open() {
 		registerProfiles();
+		scanning = true;
 		Ble.setScanState(Ble.SCAN_STATE_SCANNING);
+	}
+
+	function close() {
+		debug("close");
+		if (scanning) {
+			Ble.setScanState(Ble.SCAN_STATE_OFF);
+		}
+		if (device) {
+			Ble.unpairDevice(device);
+		}
 	}
 }

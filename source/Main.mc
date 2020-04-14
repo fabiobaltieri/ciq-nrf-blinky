@@ -13,7 +13,7 @@ class Main extends Application.AppBase {
 	function onStart(state) {
 		bleDevice = new BleDevice();
 		Ble.setDelegate(bleDevice);
-		bleDevice.start();
+		bleDevice.open();
 		return false;
 	}
 
@@ -22,6 +22,7 @@ class Main extends Application.AppBase {
 	}
 
 	function onStop(state) {
+		bleDevice.close();
 		return false;
 	}
 }
