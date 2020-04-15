@@ -4,8 +4,8 @@ using Toybox.System;
 using Toybox.BluetoothLowEnergy as Ble;
 
 hidden const DEVICE_NAME = "Nordic_Blinky";
-hidden const LBS_SERVICE = "00001523-1212-efde-1523-785feabcd123";
-hidden const LBS_LED_CHAR = "00001525-1212-efde-1523-785feabcd123";
+hidden const LBS_SERVICE = Ble.stringToUuid("00001523-1212-efde-1523-785feabcd123");
+hidden const LBS_LED_CHAR = Ble.stringToUuid("00001525-1212-efde-1523-785feabcd123");
 
 class BleDevice extends Ble.BleDelegate {
 	var scanning = false;
@@ -26,9 +26,9 @@ class BleDevice extends Ble.BleDelegate {
 
 	function registerProfiles() {
 		var profile = {
-			:uuid => Ble.stringToUuid(LBS_SERVICE),
+			:uuid => LBS_SERVICE,
 			:characteristics => [{
-				:uuid => Ble.stringToUuid(LBS_LED_CHAR)
+				:uuid => LBS_LED_CHAR
 			}]
 		};
 
