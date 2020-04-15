@@ -15,6 +15,12 @@ class DataField extends WatchUi.SimpleDataField {
 	function compute(info) {
 		var led;
 
+		if (bleDevice.scanning) {
+			return "Scanning...";
+		} else if (bleDevice.device == null) {
+			return "Disconnected";
+		}
+
 		if (info.timerState == Activity.TIMER_STATE_ON) {
 			bleDevice.setLed(1);
 			led = "on";
