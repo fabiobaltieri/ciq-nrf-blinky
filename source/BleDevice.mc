@@ -41,7 +41,11 @@ class BleDevice extends Ble.BleDelegate {
 
 	function onConnectedStateChanged(device, state) {
 		debug("connected: " + device.getName() + " " + state);
-		self.device = device;
+		if (state == Ble.CONNECTION_STATE_CONNECTED) {
+			self.device = device;
+		} else {
+			self.device = null;
+		}
 	}
 
 	private function connect(result) {
