@@ -14,6 +14,7 @@ class DataField extends WatchUi.SimpleDataField {
 
 	function compute(info) {
 		var led;
+		var button;
 
 		if (bleDevice.scanning) {
 			return "Scanning...";
@@ -29,6 +30,12 @@ class DataField extends WatchUi.SimpleDataField {
 			led = "off";
 		}
 
-		return "l:" + led + " b:" + bleDevice.button;
+		if (bleDevice.button) {
+			button = "on";
+		} else {
+			button = "off";
+		}
+
+		return "l:" + led + " b:" + button;
 	}
 }
