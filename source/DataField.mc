@@ -29,6 +29,6 @@ class DataField extends WatchUi.SimpleDataField {
 			led = "off";
 		}
 
-		return "0 " + led;
+		return "l:" + led + " b:?";
 	}
 }
