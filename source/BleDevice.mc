@@ -52,6 +52,11 @@ class BleDevice extends Ble.BleDelegate {
 
 	function onScanStateChange(scanState, status) {
 		debug("scanstate: " + scanState + " " + status);
+		if (scanState == Ble.SCAN_STATE_SCANNING) {
+			scanning = true;
+		} else {
+			scanning = false;
+		}
 	}
 
 	function onConnectedStateChanged(device, state) {
@@ -65,7 +70,6 @@ class BleDevice extends Ble.BleDelegate {
 
 	private function connect(result) {
 		debug("connect");
-		scanning = false;
 		Ble.setScanState(Ble.SCAN_STATE_OFF);
 		Ble.pairDevice(result);
 	}
@@ -99,7 +103,6 @@ class BleDevice extends Ble.BleDelegate {
 
 	function open() {
 		registerProfiles();
-		scanning = true;
 		Ble.setScanState(Ble.SCAN_STATE_SCANNING);
 	}
 
