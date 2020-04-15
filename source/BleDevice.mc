@@ -6,10 +6,13 @@ using Toybox.BluetoothLowEnergy as Ble;
 hidden const DEVICE_NAME = "Nordic_Blinky";
 hidden const LBS_SERVICE = Ble.stringToUuid("00001523-1212-efde-1523-785feabcd123");
 hidden const LBS_LED_CHAR = Ble.stringToUuid("00001525-1212-efde-1523-785feabcd123");
+hidden const LBS_BUTTON_CHAR = Ble.stringToUuid("00001524-1212-efde-1523-785feabcd123");
+hidden const LBS_BUTTON_DESC = Ble.cccdUuid();
 
 class BleDevice extends Ble.BleDelegate {
 	var scanning = false;
 	var device = null;
+	var button = 0;
 
 	hidden function debug(str) {
 		System.println("[ble] " + str);
@@ -32,7 +35,35 @@ class BleDevice extends Ble.BleDelegate {
 
 		service = device.getService(LBS_SERVICE);
 		ch = service.getCharacteristic(LBS_LED_CHAR);
-		ch.requestWrite([value & 0xff]b, {:writeType => Ble.WRITE_TYPE_DEFAULT});
+		try {
+			ch.requestWrite([value & 0xff]b, {:writeType => Ble.WRITE_TYPE_DEFAULT});
+		} catch (ex) {
+			debug("setLed: can't start char read");
+		}
+	}
+
+	function onCharacteristicChanged(ch, value) {
+		debug("char read " + ch.getUuid() + " " + value);
+		if (ch.getUuid().equals(LBS_BUTTON_CHAR)) {
+			button = value[0];
+		}
+	}
+
+	function setButtonNotifications(value) {
+		var service;
+		var ch;
+		var desc;
+
+		if (device == null) {
+			debug("setButtonNotifications: not connected");
+			return;
+		}
+		debug("setButtonNotifications: " + value);
+
+		service = device.getService(LBS_SERVICE);
+		ch = service.getCharacteristic(LBS_BUTTON_CHAR);
+		desc = ch.getDescriptor(LBS_BUTTON_DESC);
+		desc.requestWrite([value & 0x01, 0x00]b);
 	}
 
 	function onProfileRegister(uuid, status) {
@@ -43,7 +74,10 @@ class BleDevice extends Ble.BleDelegate {
 		var profile = {
 			:uuid => LBS_SERVICE,
 			:characteristics => [{
-				:uuid => LBS_LED_CHAR
+				:uuid => LBS_LED_CHAR,
+                        }, {
+				:uuid => LBS_BUTTON_CHAR,
+				:descriptors => [LBS_BUTTON_DESC],
 			}]
 		};
 
@@ -63,6 +97,7 @@ class BleDevice extends Ble.BleDelegate {
 		debug("connected: " + device.getName() + " " + state);
 		if (state == Ble.CONNECTION_STATE_CONNECTED) {
 			self.device = device;
+			setButtonNotifications(1);
 		} else {
 			self.device = null;
 		}
