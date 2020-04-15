@@ -1,3 +1,6 @@
 *.prg
+*.iq
 *.prg.debug.xml
+*-fit_contributions.json
+*-settings.json
 *.swp
