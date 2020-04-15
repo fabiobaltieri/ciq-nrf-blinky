@@ -20,6 +20,21 @@ class BleDevice extends Ble.BleDelegate {
 		debug("initialize");
 	}
 
+	function setLed(value) {
+		var service;
+		var ch;
+
+		if (device == null) {
+			debug("setLed: not connected");
+			return;
+		}
+		debug("setLed: " + value);
+
+		service = device.getService(LBS_SERVICE);
+		ch = service.getCharacteristic(LBS_LED_CHAR);
+		ch.requestWrite([value & 0xff]b, {:writeType => Ble.WRITE_TYPE_DEFAULT});
+	}
+
 	function onProfileRegister(uuid, status) {
 		debug("registered: " + uuid + " " + status);
 	}

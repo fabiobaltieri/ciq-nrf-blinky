@@ -13,6 +13,16 @@ class DataField extends WatchUi.SimpleDataField {
 	}
 
 	function compute(info) {
-		return "0 off";
+		var led;
+
+		if (info.timerState == Activity.TIMER_STATE_ON) {
+			bleDevice.setLed(1);
+			led = "on";
+		} else {
+			bleDevice.setLed(0);
+			led = "off";
+		}
+
+		return "0 " + led;
 	}
 }
