@@ -1,15 +1,16 @@
-SDK_PATH = $(HOME)/ciq/bin
-KEY = $(HOME)/ciq/key/developer_key.der
+SDK_PATH = $(HOME)/ciq
+KEY = $(SDK_PATH)/key/developer_key.der
 
 NAME = nrf-blinky
+APP_ID = 46af5ff7-b29c-4219-8ad7-a981d852a4c7
 
 JUNGLE = monkey.jungle
 ifeq ($(DEVICE),)
 DEVICE = fr245
 endif
 
-MONKEYC = $(SDK_PATH)/monkeyc
-MONKEYDO = $(SDK_PATH)/monkeydo
+MONKEYC = $(SDK_PATH)/bin/monkeyc
+MONKEYDO = $(SDK_PATH)/bin/monkeydo
 
 .PHONY: all clean sim graph
 
@@ -32,4 +33,7 @@ sim: $(NAME).prg
 	$(MONKEYDO) $(NAME).prg $(DEVICE)
 
 graph:
-	java -jar $(SDK_PATH)/fit-graph.jar
+	java -jar $(SDK_PATH)/bin/fit-graph.jar
+
+era:
+	$(SDK_PATH)/bin/era -k $(KEY) -a $(APP_ID)
