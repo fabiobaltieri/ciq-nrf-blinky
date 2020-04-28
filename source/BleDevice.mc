@@ -129,7 +129,7 @@ class BleDevice extends Ble.BleDelegate {
 			debug("device: " + name + " rssi: " + rssi);
 			dumpUuids(uuids);
 
-			if (name.equals(DEVICE_NAME)) {
+			if (name && name.equals(DEVICE_NAME)) {
 				connect(result);
 				return;
 			}
