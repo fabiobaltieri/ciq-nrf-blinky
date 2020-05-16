@@ -113,21 +113,28 @@ class BleDevice extends Ble.BleDelegate {
 		for (var x = iter.next(); x != null; x = iter.next()) {
 			debug("uuid: " + x);
 		}
-		return false;
+	}
+
+	private function dumpMfg(iter) {
+		for (var x = iter.next(); x != null; x = iter.next()) {
+			debug("mfg: companyId: " + x.get(:companyId) + " data: " + x.get(:data));
+		}
 	}
 
 	function onScanResults(scanResults) {
 		debug("scan results");
-		var uuids;
-		var name;
-		var rssi;
+		var appearance, name, rssi;
+		var mfg, uuids, service;
 		for (var result = scanResults.next(); result != null; result = scanResults.next()) {
-			uuids = result.getServiceUuids();
+			appearance = result.getAppearance();
 			name = result.getDeviceName();
 			rssi = result.getRssi();
+			mfg = result.getManufacturerSpecificDataIterator();
+			uuids = result.getServiceUuids();
 
-			debug("device: " + name + " rssi: " + rssi);
+			debug("device: appearance: " + appearance + " name: " + name + " rssi: " + rssi);
 			dumpUuids(uuids);
+			dumpMfg(mfg);
 
 			if (name && name.equals(DEVICE_NAME)) {
 				connect(result);
