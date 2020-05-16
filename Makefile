@@ -37,3 +37,8 @@ graph:
 
 era:
 	$(SDK_PATH)/bin/era -k $(KEY) -a $(APP_ID)
+
+flash:
+	nrfjprog --eraseall
+	nrfjprog --program $(SDK_PATH)/connectivity_2.0.1_115k2_with_s132_5.0.hex
+	nrfjprog --reset
