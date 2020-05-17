@@ -136,7 +136,7 @@ class BleDevice extends Ble.BleDelegate {
 			dumpUuids(uuids);
 			dumpMfg(mfg);
 
-			if (name && name.equals(DEVICE_NAME)) {
+			if (name != null && name.equals(DEVICE_NAME)) {
 				connect(result);
 				return;
 			}
