@@ -14,7 +14,6 @@ class Main extends Application.AppBase {
 		bleDevice = new BleDevice();
 		Ble.setDelegate(bleDevice);
 		bleDevice.open();
-		return false;
 	}
 
 	function getInitialView() {
@@ -23,6 +22,5 @@ class Main extends Application.AppBase {
 
 	function onStop(state) {
 		bleDevice.close();
-		return false;
 	}
 }
