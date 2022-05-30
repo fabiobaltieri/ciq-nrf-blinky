@@ -16,6 +16,8 @@ class DataField extends WatchUi.SimpleDataField {
 		var led;
 		var button;
 
+		bleDevice.scan();
+
 		if (bleDevice.scanning) {
 			return "Scanning...";
 		} else if (bleDevice.device == null) {

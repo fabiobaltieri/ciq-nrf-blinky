@@ -13,6 +13,7 @@ class BleDevice extends Ble.BleDelegate {
 	var scanning = false;
 	var device = null;
 	var button = 0;
+	var scan_delay = 5;
 
 	hidden function debug(str) {
 		System.println("[ble] " + str);
@@ -145,6 +146,21 @@ class BleDevice extends Ble.BleDelegate {
 
 	function open() {
 		registerProfiles();
+	}
+
+	function scan() {
+		if (scan_delay == 0) {
+			return;
+		}
+
+		debug(scan_delay);
+
+		scan_delay--;
+		if (scan_delay) {
+			return;
+		}
+
+		debug("scan on");
 		Ble.setScanState(Ble.SCAN_STATE_SCANNING);
 	}
 
@@ -153,7 +169,7 @@ class BleDevice extends Ble.BleDelegate {
 		if (scanning) {
 			Ble.setScanState(Ble.SCAN_STATE_OFF);
 		}
-		if (device) {
+		if (device != null) {
 			Ble.unpairDevice(device);
 		}
 	}
