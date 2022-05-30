@@ -4,6 +4,7 @@ using Toybox.System;
 using Toybox.BluetoothLowEnergy as Ble;
 
 hidden const DEVICE_NAME = "Nordic_Blinky";
+hidden const DEVICE_NAME_Z = "Nordic_LBS";
 hidden const LBS_SERVICE = Ble.stringToUuid("00001523-1212-efde-1523-785feabcd123");
 hidden const LBS_LED_CHAR = Ble.stringToUuid("00001525-1212-efde-1523-785feabcd123");
 hidden const LBS_BUTTON_CHAR = Ble.stringToUuid("00001524-1212-efde-1523-785feabcd123");
@@ -137,7 +138,9 @@ class BleDevice extends Ble.BleDelegate {
 			dumpUuids(uuids);
 			dumpMfg(mfg);
 
-			if (name != null && name.equals(DEVICE_NAME)) {
+			if (name != null && (
+				name.equals(DEVICE_NAME) ||
+				name.equals(DEVICE_NAME_Z))) {
 				connect(result);
 				return;
 			}
