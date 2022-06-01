@@ -1,5 +1,5 @@
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="1">
-	<iq:application entry="Main" id="6FBA73E41B4A44768DE4E8064C8771D6" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="1.2.0" name="@Strings.AppName" type="datafield">
+	<iq:application entry="Main" id="6FBA73E41B4A44768DE4E8064C8771D6" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="3.2.0" name="@Strings.AppName" type="datafield">
 		<iq:products>
 			<iq:product id="d2air"/>
 			<iq:product id="descentmk2"/>
