@@ -6,7 +6,7 @@ APP_ID = 46af5ff7-b29c-4219-8ad7-a981d852a4c7
 
 JUNGLE = monkey.jungle
 ifeq ($(DEVICE),)
-DEVICE = fr245
+DEVICE = fr955
 endif
 
 MONKEYC = $(SDK_PATH)/bin/monkeyc
