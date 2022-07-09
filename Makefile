@@ -1,5 +1,5 @@
 SDK_PATH = $(HOME)/ciq
-KEY = $(HOME)/.Garmin/key/developer_key.der
+KEY = developer_key.der
 
 NAME = nrf-blinky
 APP_ID = 46af5ff7-b29c-4219-8ad7-a981d852a4c7
