@@ -4,14 +4,14 @@ using Toybox.Application;
 using Toybox.BluetoothLowEnergy as Ble;
 
 class Main extends Application.AppBase {
-	hidden var bleDevice;
+	private var bleDevice;
 
 	function initialize() {
 		AppBase.initialize();
 	}
 
 	function onStart(state) {
-		bleDevice = new BleDevice();
+		bleDevice = new LBS();
 		Ble.setDelegate(bleDevice);
 		bleDevice.open();
 	}

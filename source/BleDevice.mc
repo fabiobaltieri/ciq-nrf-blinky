@@ -3,20 +3,12 @@
 using Toybox.System;
 using Toybox.BluetoothLowEnergy as Ble;
 
-hidden const DEVICE_NAME = "Nordic_Blinky";
-hidden const DEVICE_NAME_Z = "Nordic_LBS";
-hidden const LBS_SERVICE = Ble.stringToUuid("00001523-1212-efde-1523-785feabcd123");
-hidden const LBS_LED_CHAR = Ble.stringToUuid("00001525-1212-efde-1523-785feabcd123");
-hidden const LBS_BUTTON_CHAR = Ble.stringToUuid("00001524-1212-efde-1523-785feabcd123");
-hidden const LBS_BUTTON_DESC = Ble.cccdUuid();
-
 class BleDevice extends Ble.BleDelegate {
 	var scanning = false;
 	var device = null;
-	var button = 0;
-	var scan_delay = 5;
+	private var scan_delay = 5;
 
-	hidden function debug(str) {
+	protected function debug(str) {
 		System.println("[ble] " + str);
 	}
 
@@ -25,46 +17,46 @@ class BleDevice extends Ble.BleDelegate {
 		debug("initialize");
 	}
 
-	function setLed(value) {
+	protected function write(data) {
 		var service;
 		var ch;
 
 		if (device == null) {
-			debug("setLed: not connected");
+			debug("write: not connected");
 			return;
 		}
-		debug("setLed: " + value);
+		debug("write: " + data);
 
-		service = device.getService(LBS_SERVICE);
-		ch = service.getCharacteristic(LBS_LED_CHAR);
+		service = device.getService(SERVICE);
+		ch = service.getCharacteristic(WRITE_CHAR);
 		try {
-			ch.requestWrite([value & 0xff]b, {:writeType => Ble.WRITE_TYPE_DEFAULT});
+			ch.requestWrite(data, {:writeType => Ble.WRITE_TYPE_DEFAULT});
 		} catch (ex) {
-			debug("setLed: can't start char read");
+			debug("write: can't start char write");
 		}
 	}
 
 	function onCharacteristicChanged(ch, value) {
 		debug("char read " + ch.getUuid() + " " + value);
-		if (ch.getUuid().equals(LBS_BUTTON_CHAR)) {
-			button = value[0];
+		if (ch.getUuid().equals(READ_CHAR)) {
+			read(value);
 		}
 	}
 
-	function setButtonNotifications(value) {
+	private function setReadNotifications(value) {
 		var service;
 		var ch;
 		var desc;
 
 		if (device == null) {
-			debug("setButtonNotifications: not connected");
+			debug("setReadNotifications: not connected");
 			return;
 		}
-		debug("setButtonNotifications: " + value);
+		debug("setReadNotifications: " + value);
 
-		service = device.getService(LBS_SERVICE);
-		ch = service.getCharacteristic(LBS_BUTTON_CHAR);
-		desc = ch.getDescriptor(LBS_BUTTON_DESC);
+		service = device.getService(SERVICE);
+		ch = service.getCharacteristic(READ_CHAR);
+		desc = ch.getDescriptor(READ_DESC);
 		desc.requestWrite([value & 0x01, 0x00]b);
 	}
 
@@ -72,14 +64,14 @@ class BleDevice extends Ble.BleDelegate {
 		debug("registered: " + uuid + " " + status);
 	}
 
-	function registerProfiles() {
+	private function registerProfiles() {
 		var profile = {
-			:uuid => LBS_SERVICE,
+			:uuid => SERVICE,
 			:characteristics => [{
-				:uuid => LBS_LED_CHAR,
-                        }, {
-				:uuid => LBS_BUTTON_CHAR,
-				:descriptors => [LBS_BUTTON_DESC],
+				:uuid => READ_CHAR,
+				:descriptors => [READ_DESC],
+			}, {
+				:uuid => WRITE_CHAR,
 			}]
 		};
 
@@ -99,9 +91,10 @@ class BleDevice extends Ble.BleDelegate {
 		debug("connected: " + device.getName() + " " + state);
 		if (state == Ble.CONNECTION_STATE_CONNECTED) {
 			self.device = device;
-			setButtonNotifications(1);
+			setReadNotifications(1);
 		} else {
 			self.device = null;
+			reset();
 		}
 	}
 
@@ -109,18 +102,6 @@ class BleDevice extends Ble.BleDelegate {
 		debug("connect");
 		Ble.setScanState(Ble.SCAN_STATE_OFF);
 		Ble.pairDevice(result);
-	}
-
-	private function dumpUuids(iter) {
-		for (var x = iter.next(); x != null; x = iter.next()) {
-			debug("uuid: " + x);
-		}
-	}
-
-	private function dumpMfg(iter) {
-		for (var x = iter.next(); x != null; x = iter.next()) {
-			debug("mfg: companyId: " + x.get(:companyId) + " data: " + x.get(:data));
-		}
 	}
 
 	function onScanResults(scanResults) {
@@ -135,12 +116,8 @@ class BleDevice extends Ble.BleDelegate {
 			uuids = result.getServiceUuids();
 
 			debug("device: appearance: " + appearance + " name: " + name + " rssi: " + rssi);
-			dumpUuids(uuids);
-			dumpMfg(mfg);
 
-			if (name != null && (
-				name.equals(DEVICE_NAME) ||
-				name.equals(DEVICE_NAME_Z))) {
+			if (matchDevice(name, mfg, uuids)) {
 				connect(result);
 				return;
 			}
@@ -156,7 +133,7 @@ class BleDevice extends Ble.BleDelegate {
 			return;
 		}
 
-		debug(scan_delay);
+		debug("scan delay: " + scan_delay);
 
 		scan_delay--;
 		if (scan_delay) {
@@ -169,9 +146,11 @@ class BleDevice extends Ble.BleDelegate {
 
 	function close() {
 		debug("close");
+
 		if (scanning) {
 			Ble.setScanState(Ble.SCAN_STATE_OFF);
 		}
+
 		if (device != null) {
 			Ble.unpairDevice(device);
 		}

@@ -4,7 +4,7 @@ using Toybox.WatchUi;
 using Toybox.System;
 
 class DataField extends WatchUi.SimpleDataField {
-	hidden var bleDevice;
+	private var bleDevice;
 
 	function initialize(device) {
 		SimpleDataField.initialize();
