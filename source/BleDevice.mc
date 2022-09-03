@@ -5,8 +5,10 @@ using Toybox.BluetoothLowEnergy as Ble;
 
 class BleDevice extends Ble.BleDelegate {
 	var scanning = false;
+	var paired = false;
 	var device = null;
 	private var scan_delay = 5;
+	private var scan_timeout;
 
 	protected function debug(str) {
 		System.println("[ble] " + str);
@@ -102,6 +104,7 @@ class BleDevice extends Ble.BleDelegate {
 		debug("connect");
 		Ble.setScanState(Ble.SCAN_STATE_OFF);
 		Ble.pairDevice(result);
+		paired = true;
 	}
 
 	function onScanResults(scanResults) {
@@ -129,19 +132,31 @@ class BleDevice extends Ble.BleDelegate {
 	}
 
 	function scan() {
-		if (scan_delay == 0) {
+		if (paired) {
 			return;
 		}
 
-		debug("scan delay: " + scan_delay);
+		debug("scan delay: " + scan_delay + " timeout: " + scan_timeout);
 
-		scan_delay--;
-		if (scan_delay) {
+		if (scanning) {
+			if (scan_timeout > 0) {
+				scan_timeout--;
+				return;
+			}
+			debug("scan timeout");
+			Ble.setScanState(Ble.SCAN_STATE_OFF);
+			scan_delay = RESCAN_DELAY;
+			return;
+		}
+
+		if (scan_delay > 0) {
+			scan_delay--;
 			return;
 		}
 
 		debug("scan on");
 		Ble.setScanState(Ble.SCAN_STATE_SCANNING);
+		scan_timeout = SCAN_TIMEOUT;
 	}
 
 	function close() {

@@ -10,6 +10,9 @@ class LBS extends BleDevice {
 	protected const READ_DESC = Ble.cccdUuid();
 	protected const WRITE_CHAR = Ble.stringToUuid("00001525-1212-efde-1523-785feabcd123");
 
+	protected const SCAN_TIMEOUT = 5;
+	protected const RESCAN_DELAY = 10;
+
 	var button = 0;
 
 	private function dumpUuids(iter) {

@@ -20,6 +20,8 @@ class DataField extends WatchUi.SimpleDataField {
 
 		if (bleDevice.scanning) {
 			return "Scanning...";
+		} else if (!bleDevice.paired) {
+			return "Idle";
 		} else if (bleDevice.device == null) {
 			return "Disconnected";
 		}
