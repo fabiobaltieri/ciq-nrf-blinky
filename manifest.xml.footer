@@ -1,0 +1,7 @@
+		</iq:products>
+		<iq:languages/>
+		<iq:permissions>
+			<iq:uses-permission id="BluetoothLowEnergy"/>
+		</iq:permissions>
+	</iq:application>
+</iq:manifest>
