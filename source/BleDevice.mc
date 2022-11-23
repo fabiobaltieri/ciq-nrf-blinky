@@ -4,6 +4,14 @@ using Toybox.System;
 using Toybox.BluetoothLowEnergy as Ble;
 
 class BleDevice extends Ble.BleDelegate {
+	protected var SERVICE = null;
+	protected var READ_CHAR = null;
+	protected var READ_DESC = null;
+	protected var WRITE_CHAR = null;
+
+	protected var SCAN_TIMEOUT = 5;
+	protected var RESCAN_DELAY = 10;
+
 	var scanning = false;
 	var paired = false;
 	var device = null;
@@ -37,6 +45,8 @@ class BleDevice extends Ble.BleDelegate {
 			debug("write: can't start char write");
 		}
 	}
+
+	protected function read(value) {}
 
 	function onCharacteristicChanged(ch, value) {
 		debug("char read " + ch.getUuid() + " " + value);
@@ -89,6 +99,8 @@ class BleDevice extends Ble.BleDelegate {
 		}
 	}
 
+	protected function reset() {}
+
 	function onConnectedStateChanged(device, state) {
 		debug("connected: " + device.getName() + " " + state);
 		if (state == Ble.CONNECTION_STATE_CONNECTED) {
@@ -107,22 +119,26 @@ class BleDevice extends Ble.BleDelegate {
 		paired = true;
 	}
 
+	protected function matchDevice(name, mfg, uuids) {}
+
 	function onScanResults(scanResults) {
 		debug("scan results");
 		var appearance, name, rssi;
 		var mfg, uuids, service;
 		for (var result = scanResults.next(); result != null; result = scanResults.next()) {
-			appearance = result.getAppearance();
-			name = result.getDeviceName();
-			rssi = result.getRssi();
-			mfg = result.getManufacturerSpecificDataIterator();
-			uuids = result.getServiceUuids();
+			if (result instanceof Ble.ScanResult) {
+				appearance = result.getAppearance();
+				name = result.getDeviceName();
+				rssi = result.getRssi();
+				mfg = result.getManufacturerSpecificDataIterator();
+				uuids = result.getServiceUuids();
 
-			debug("device: appearance: " + appearance + " name: " + name + " rssi: " + rssi);
+				debug("device: appearance: " + appearance + " name: " + name + " rssi: " + rssi);
 
-			if (matchDevice(name, mfg, uuids)) {
-				connect(result);
-				return;
+				if (matchDevice(name, mfg, uuids)) {
+					connect(result);
+					return;
+				}
 			}
 		}
 	}
