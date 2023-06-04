@@ -27,7 +27,7 @@ $(NAME).prg: manifest.xml resources/*.xml source/*.mc
 	$(MONKEYC) -d $(DEVICE) -f $(JUNGLE) -o $(NAME).prg -y $(KEY)
 
 $(NAME).iq: manifest.xml resources/*.xml source/*.mc
-	$(MONKEYC) -e -f $(JUNGLE) -o $(NAME).iq -y $(KEY)
+	$(MONKEYC) -e -f $(JUNGLE) -o $(PWD)/$(NAME).iq -y $(KEY)
 
 sim: $(NAME).prg
 	$(MONKEYDO) $(NAME).prg $(DEVICE)
